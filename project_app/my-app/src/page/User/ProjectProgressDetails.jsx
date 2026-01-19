@@ -126,7 +126,7 @@ const ProjectProgressDetails = () => {
     {
       title: "Basic Info",
       fields: [
-        { label: "Progress No", name: "progressNo" },
+        { label: "Progress Name", name: "progressName" },
         { label: "Main Objective", name: "mainObjective" },
         { label: "Location", name: "location" },
         { label: "Total Cost (Original)", name: "totalCostOriginal", type: "currency" },

@@ -10,7 +10,7 @@ const ProjectProgressForm = () => {
 
   const defaultForm = {
     projectId: "",
-    progressNo: "",
+    progressName: "",
     mainObjective: "",
     location: "",
     totalCostOriginal: "",
@@ -283,7 +283,7 @@ const ProjectProgressForm = () => {
   const isFieldEditable = (role, fieldName) => {
     if (role === 'physicalStaff') {
       if (!isEditing) return false; // Freeze fields if not in edit mode
-      const basicFields = ['projectId', 'progressNo', 'mainObjective', 'location', 'totalCostOriginal', 'totalCostCurrent', 'awardedAmount', 'revisedEndDate', 'fundingSource'];
+      const basicFields = ['projectId', 'progressName', 'mainObjective', 'location', 'totalCostOriginal', 'totalCostCurrent', 'awardedAmount', 'revisedEndDate', 'fundingSource'];
       const physicalFields = ['overallTarget', 'progressAsOfPrevDecPercentage', 'currentYearDescriptiveTarget', 'quarter1TargetPercentage', 'quarter2TargetPercentage', 'quarter3TargetPercentage', 'quarter4TargetPercentage', 'yearEndProgressDescription', 'yearEndProgressPercentage', 'cumulativeTargetAtYearEnd', 'cumulativeProgressDescriptionAtYearEnd', 'cumulativeProgressPercentageOfOverallTarget', 'physicalProgressImage1', 'physicalProgressImage2', 'physicalProgressImage3', 'physicalTargetFailureReasons', 'contractors', 'consultants'];
       return basicFields.includes(fieldName) || physicalFields.includes(fieldName);
     } else if (role === 'financialStaff') {
@@ -716,7 +716,7 @@ const ProjectProgressForm = () => {
       title: t('basicInfo'),
       fields: [
         { label: t('project'), name: "projectId", type: "dropdown" },
-        { label: t('progressNo'), name: "progressNo" },
+        { label: t('progressName'), name: "progressName" },
         { label: t('mainObjective'), name: "mainObjective" },
         { label: t('location'), name: "location" },
         { label: t('totalCostOriginal'), name: "totalCostOriginal", type: "number" },
@@ -821,7 +821,7 @@ const ProjectProgressForm = () => {
             ) : drafts.length > 0 ? (
               drafts.map((draft) => (
                 <option key={draft._id} value={draft._id}>
-                  {draft.projectId?.projectName || 'Unknown Project'} (Progress #{draft.progressNo})
+                  {draft.projectId?.projectName || 'Unknown Project'} (Progress: {draft.progressName})
                 </option>
               ))
             ) : (
@@ -866,7 +866,7 @@ const ProjectProgressForm = () => {
                         {item.projectId?.projectName || 'Unnamed Project'}
                       </h4>
                       <p className="text-sm text-gray-500 mb-2">
-                        Progress #{item.progressNo} • {new Date(item.createdAt).toLocaleDateString()}
+                        Progress: {item.progressName} • {new Date(item.createdAt).toLocaleDateString()}
                       </p>
                       {item.mainObjective && (
                         <p className="text-gray-700"><strong>Objective:</strong> {item.mainObjective}</p>

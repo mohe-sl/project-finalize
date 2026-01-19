@@ -211,7 +211,7 @@ const ProjectProgressReport = ({ project, progress }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Basic Information</Text>
           <View style={styles.grid}>
-            <DetailField label="Progress No" value={progress.progressNo} />
+            <DetailField label="Progress Name" value={progress.progressName} />
             <DetailField label="Location" value={progress.location} />
             <DetailField label="Main Objective" value={progress.mainObjective} fullWidth />
             <DetailField label="Total Cost (Original)" value={formatLKR(progress.totalCostOriginal)} />

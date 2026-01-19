@@ -75,9 +75,9 @@ const TRANSLATIONS = {
     enter: 'Enter',
     failedToSubmit: 'Failed to submit:',
     networkError: 'Network error. Please make sure the server is running on http://localhost:5000',
-    failedSubmitProgress: 'Failed to submit progress:' ,
+    failedSubmitProgress: 'Failed to submit progress:',
     // Field labels
-    progressNo: 'Progress No',
+    progressName: 'Progress Name',
     mainObjective: 'Main Objective',
     totalCostOriginal: 'Total Cost (Original)',
     totalCostCurrent: 'Total Cost (Current)',
@@ -188,7 +188,7 @@ const TRANSLATIONS = {
     networkError: 'ජාල දෝෂයක්. කරුණාකර සේවාදායකය http://localhost:5000 මත ක්‍රියාත්මක බව විශ්වාස කරන්න',
     failedSubmitProgress: 'ප්‍රගති ඉදිරිපත් කිරීම අසාර්ථකයි:',
     // Field labels
-    progressNo: 'ප්‍රගති අංකය',
+    progressName: 'ප්‍රගති නම',
     mainObjective: 'ප්‍රධාන අරමුණ',
     totalCostOriginal: 'මුළු වියදම් (මුල්)',
     totalCostCurrent: 'මුළු වියදම් (වත්මන්)',
@@ -246,7 +246,7 @@ export function setStoredLang(lang) {
     } catch (e) {
       // ignore in non-browser environments
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 export function t(key, lang) {
@@ -262,7 +262,7 @@ export function useTranslation() {
   useEffect(() => {
     try {
       setStoredLang(lang);
-    } catch (e) {}
+    } catch (e) { }
   }, [lang]);
 
   // Listen for language changes dispatched elsewhere in the same window

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const projectProgressSchema = new mongoose.Schema({
   projectId: { type: mongoose.Schema.Types.ObjectId, ref: "Project", required: true },
-  progressNo: String,
+  progressName: String,
   mainObjective: String,
   location: String,
   totalCostOriginal: Number,
