@@ -8,16 +8,39 @@ const router = express.Router();
 // (assign-institution endpoints removed)
 
 // ✅ Create Project with image upload
-router.post("/", protect, upload.single("image"), async (req, res) => {
+const uploadFields = upload.fields([
+  { name: 'projectImage', maxCount: 1 },
+  { name: 'projectPDF', maxCount: 1 },
+  { name: 'extensionPDF', maxCount: 1 },
+  // Keeping 'image' for backward compatibility if needed, though form sends 'projectImage' now
+  { name: 'image', maxCount: 1 }
+]);
+
+router.post("/", protect, uploadFields, async (req, res) => {
   try {
     const projectData = {
       ...req.body,
-      image: req.file ? `/uploads/${req.file.filename}` : null
     };
-    
-    // Convert string numbers to actual numbers
-    if (req.body.budget) projectData.budget = Number(req.body.budget);
-    if (req.body.fundingScore) projectData.fundingScore = Number(req.body.fundingScore);
+
+    // Handle file uploads
+    if (req.files) {
+      if (req.files.projectImage) projectData.projectImage = `/uploads/${req.files.projectImage[0].filename}`;
+      if (req.files.projectPDF) projectData.projectPDF = `/uploads/${req.files.projectPDF[0].filename}`;
+      if (req.files.extensionPDF) projectData.extensionPDF = `/uploads/${req.files.extensionPDF[0].filename}`;
+      if (req.files.image) projectData.image = `/uploads/${req.files.image[0].filename}`; // legacy
+    }
+
+    // Clean up empty strings for numbers and dates to avoid CastErrors
+    ['tec', 'awardedAmount', 'budget', 'fundingScore'].forEach(field => {
+      if (req.body[field] === "") delete projectData[field];
+      else if (req.body[field]) projectData[field] = Number(req.body[field]);
+    });
+
+    ['durationStart', 'durationEnd', 'returnPeriodsStart', 'returnPeriodsEnd',
+      'startDate', 'estimatedEndDate', 'extendedDate', 'revisedDate', 'npdDate',
+      'cabinetPapersDate', 'endDate'].forEach(field => {
+        if (req.body[field] === "") delete projectData[field];
+      });
 
     // attach creator
     projectData.createdBy = req.user ? req.user._id : null;
@@ -25,6 +48,7 @@ router.post("/", protect, upload.single("image"), async (req, res) => {
     await project.save();
     res.status(201).json(project);
   } catch (err) {
+    console.error("Error creating project:", err);
     res.status(400).json({ error: err.message });
   }
 });
@@ -73,18 +97,29 @@ router.get("/:id", protect, async (req, res) => {
 });
 
 // ✅ Update Project
-router.put("/:id", protect, upload.single("image"), async (req, res) => {
+router.put("/:id", protect, uploadFields, async (req, res) => {
   try {
     const updateData = { ...req.body };
-    
-    // Add image path if new image was uploaded
-    if (req.file) {
-      updateData.image = `/uploads/${req.file.filename}`;
+
+    // Add image paths if new files were uploaded
+    if (req.files) {
+      if (req.files.projectImage) updateData.projectImage = `/uploads/${req.files.projectImage[0].filename}`;
+      if (req.files.projectPDF) updateData.projectPDF = `/uploads/${req.files.projectPDF[0].filename}`;
+      if (req.files.extensionPDF) updateData.extensionPDF = `/uploads/${req.files.extensionPDF[0].filename}`;
+      if (req.files.image) updateData.image = `/uploads/${req.files.image[0].filename}`;
     }
 
-    // Convert string numbers to actual numbers
-    if (req.body.budget) updateData.budget = Number(req.body.budget);
-    if (req.body.fundingScore) updateData.fundingScore = Number(req.body.fundingScore);
+    // Clean up empty strings for numbers and dates
+    ['tec', 'awardedAmount', 'budget', 'fundingScore'].forEach(field => {
+      if (req.body[field] === "") delete updateData[field];
+      else if (req.body[field]) updateData[field] = Number(req.body[field]);
+    });
+
+    ['durationStart', 'durationEnd', 'returnPeriodsStart', 'returnPeriodsEnd',
+      'startDate', 'estimatedEndDate', 'extendedDate', 'revisedDate', 'npdDate',
+      'cabinetPapersDate', 'endDate'].forEach(field => {
+        if (req.body[field] === "") delete updateData[field];
+      });
 
     // ownership check
     const existing = await Project.findById(req.params.id);
@@ -98,9 +133,10 @@ router.put("/:id", protect, upload.single("image"), async (req, res) => {
       updateData,
       { new: true, runValidators: true }
     );
-    
+
     res.json(project);
   } catch (err) {
+    console.error("Error updating project:", err);
     res.status(400).json({ error: err.message });
   }
 });
