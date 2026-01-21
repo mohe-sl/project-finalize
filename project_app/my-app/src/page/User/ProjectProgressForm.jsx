@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useTranslation } from "../../i18n";
+import { PhysicalProgressSection, FinancialProgressSection } from "../../components/PhysicalProgressForm";
 
 const ProjectProgressForm = () => {
   const { projectId } = useParams();
@@ -940,15 +941,36 @@ const ProjectProgressForm = () => {
           <h2 className="text-2xl font-bold mb-6 text-gray-800">
             {sections[step].title}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {sections[step].fields.map((field) => {
-              const canEdit = isFieldEditable(userRole, field.name);
-              const readOnly = !canEdit && userRole !== undefined;
-              return field.type === "dropdown"
-                ? renderProjectDropdown({ ...field, readOnly })
-                : renderInput({ ...field, readOnly });
-            })}
-          </div>
+
+          {/* Use PhysicalProgressSection for Physical Progress step */}
+          {step === 1 ? (
+            <PhysicalProgressSection
+              form={form}
+              onChange={handleChange}
+              isEditing={isEditing && isFieldEditable(userRole, 'overallTarget')}
+              t={t}
+              imagePreviews={imagePreviews}
+            />
+          ) : step === 2 ? (
+            <FinancialProgressSection
+              form={form}
+              onChange={handleChange}
+              isEditing={isFinancialEditing}
+              projectName={filteredProjects.find(p => p._id === form.projectId)?.projectName}
+              userRole={userRole}
+              onSave={handleSave}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {sections[step].fields.map((field) => {
+                const canEdit = isFieldEditable(userRole, field.name);
+                const readOnly = !canEdit && userRole !== undefined;
+                return field.type === "dropdown"
+                  ? renderProjectDropdown({ ...field, readOnly })
+                  : renderInput({ ...field, readOnly });
+              })}
+            </div>
+          )}
 
           {/* Navigation Buttons */}
           <div className="flex justify-between mt-8">

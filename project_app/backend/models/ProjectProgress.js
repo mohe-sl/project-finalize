@@ -11,9 +11,15 @@ const projectProgressSchema = new mongoose.Schema({
   revisedEndDate: Date,
   fundingSource: String,
 
-  // Physical progress
+  // Physical progress - Enhanced for government-style format
   overallTarget: String,
   progressAsOfPrevDecPercentage: Number,
+
+  // Target Year/Month Selection
+  targetYear: { type: Number, default: () => new Date().getFullYear() },
+  targetMonth: String,
+  progressDate: Date,
+
   currentYearDescriptiveTarget: String,
   quarter1TargetPercentage: Number,
   quarter2TargetPercentage: Number,
@@ -30,6 +36,7 @@ const projectProgressSchema = new mongoose.Schema({
   physicalTargetFailureReasons: String,
   contractors: String,
   consultants: String,
+
 
   // Financial progress
   allocationCurrentYear: Number,
